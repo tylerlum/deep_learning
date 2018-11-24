@@ -10,6 +10,14 @@ from keras.layers import Dense
 from keras.optimizers import Adam
 from keras.utils.np_utils import to_categorical
 
+def create_model(num_pixels, num_classes):
+    model = Sequential()
+    model.add(Dense(units=10, input_dim=num_pixels, activation='relu'))
+    model.add(Dense(units=10, activation='relu'))
+    model.add(Dense(units=num_classes, activation='softmax'))
+    model.compile(Adam(lr=0.01), loss='categorical_crossentropy', metrics=['accuracy'])
+    return model
+
 np.random.seed(0)
 
 ## Get mnist training data
@@ -63,5 +71,20 @@ num_pixels = len(X_train[1]) * len(X_train[2])
 X_train = X_train.reshape(X_train.shape[0], num_pixels)
 X_test = X_test.reshape(X_test.shape[0], num_pixels)
 
-print(X_train.shape)
-print(X_test.shape)
+## Create neural network
+model = create_model(num_pixels, num_classes)
+history = model.fit(X_train, Y_train, validation_split=0.1, epochs=10, batch_size=200, verbose=1, shuffle='true')
+
+## Plot accuracy
+plt.plot(history.history['acc'])
+plt.plot(history.history['val_acc'])
+plt.legend(['acc', 'val_acc'])
+plt.title('acc')
+plt.xlabel('epoch')
+plt.show()
+
+## Test model
+score = model.evaluate(X_test, Y_test, verbose=0)
+print('Test score {0}'.format(score[0]))
+print('Test accuracy {0}'.format(score[1]))
+

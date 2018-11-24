@@ -10,6 +10,10 @@ from keras.layers import Dense
 from keras.optimizers import Adam
 from keras.utils.np_utils import to_categorical
 
+import cv2
+import requests
+from PIL import Image
+
 def create_model(num_pixels, num_classes):
     model = Sequential()
     model.add(Dense(units=10, input_dim=num_pixels, activation='relu'))
@@ -87,4 +91,24 @@ plt.show()
 score = model.evaluate(X_test, Y_test, verbose=0)
 print('Test score {0}'.format(score[0]))
 print('Test accuracy {0}'.format(score[1]))
+
+## Get url image
+url = "https://www.researchgate.net/profile/Jose_Sempere/publication/221258631/figure/fig1/AS:305526891139075@1449854695342/Handwritten-digit-2.png"
+response = requests.get(url, stream=True)
+img = Image.open(response.raw)
+plt.imshow(img)
+plt.show()
+
+## Resize and invert colors of image
+img_array = np.asarray(img)
+resized = cv2.resize(img_array, (28, 28))
+gray_scale = cv2.cvtColor(resized, cv2.COLOR_BGR2GRAY) 
+image = cv2.bitwise_not(gray_scale)
+plt.imshow(image, cmap=plt.get_cmap('gray'))
+
+## Normalize and flatten
+image = image / 255
+image = image.reshape(1, 784)
+prediction = model.predict_classes(image)
+print("Predicted digit: {0}".format(prediction))
 

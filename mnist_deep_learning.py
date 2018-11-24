@@ -16,8 +16,9 @@ from PIL import Image
 
 def create_model(num_pixels, num_classes):
     model = Sequential()
-    model.add(Dense(units=10, input_dim=num_pixels, activation='relu'))
-    model.add(Dense(units=10, activation='relu'))
+    model.add(Dense(units=30, input_dim=num_pixels, activation='relu'))
+    model.add(Dense(units=30, activation='relu'))
+    model.add(Dense(units=20, activation='relu'))
     model.add(Dense(units=num_classes, activation='softmax'))
     model.compile(Adam(lr=0.01), loss='categorical_crossentropy', metrics=['accuracy'])
     return model
